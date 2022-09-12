@@ -6,18 +6,32 @@ canvas.height = 579
 
 c.fillRect(0, 0, canvas.width, canvas.height)
 
+const gravedad = 0.2
 
 class Sprite {
     constructor({ posicion, velocidad }) {
         this.posicion = posicion
         this.velocidad = velocidad
+        this.altura = 150
     }
 
+    //draw es uno de mis metodos de mi clase sprite
     draw() {
         c.fillStyle = 'red' //marco jugador como rojo
-        c.fillRect(this.posicion.x, this.posicion.y, 50, 150)
+        c.fillRect(this.posicion.x, this.posicion.y, 50, this.altura)
     }
-    //draw es uno de mis metodos de mi clase sprite
+    
+    update() {
+        this.draw()
+        //this.posicion.y = this.posicion.y + 10 -- lo de abajo es mas simplificado
+        this.posicion.y += this.velocidad.y
+        if (this.posicion.y + this.altura + this.velocidad.y >= canvas.height)
+           {this.velocidad.y = 0}
+           else 
+           this.velocidad.y += gravedad
+
+    }
+
 }
 
 //jugador
@@ -34,16 +48,21 @@ const oponente = new Sprite ({
     velocidad: {x: 0, y: 0}
 })
 
-// invoco metodo draw 
-jugador.draw()  
-oponente.draw()
 
 
 console.log(jugador);
 
 function animate () {
     window.requestAnimationFrame(animate)
-    console.log('go');
+    //llamo a un metodo de mi canvas
+    c.fillStyle = 'black'
+    c.fillRect(0, 0, canvas.width, canvas.height)
+
+    // invoco metodo update que tiene a draw
+    jugador.update()
+    oponente.update()
+    //console.log('go');
+     
 }
 
 animate()
