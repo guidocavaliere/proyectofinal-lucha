@@ -9,21 +9,46 @@ c.fillRect(0, 0, canvas.width, canvas.height)
 const gravedad = 0.7
 
 class Sprite {
-    constructor({ posicion, velocidad }) {
+    constructor({ posicion, velocidad, color, offset }) {
         this.posicion = posicion
         this.velocidad = velocidad
+        this.ancho = 50
         this.altura = 150
         this.lastKey
+        this.attackBox = {
+            posicion: 
+            {x: this.posicion.x,
+            y:this.posicion.y}, 
+            offset,
+            width: 100,
+            height: 50
+        }
+        this.color = color
+        this.isAttacking
     }
 
     //draw es uno de mis metodos de mi clase sprite
     draw() {
-        c.fillStyle = 'red' //marco jugador como rojo
-        c.fillRect(this.posicion.x, this.posicion.y, 50, this.altura)
+        c.fillStyle = this.color //marco jugador segun color propiedad this.color
+        c.fillRect(this.posicion.x, this.posicion.y, this.ancho, this.altura)
+
+        //ataque
+        if (this.isAttacking) {
+        c.fillStyle = 'green'
+        c.fillRect(
+            this.attackBox.posicion.x, 
+            this.attackBox.posicion.y,
+            this.attackBox.width, 
+            this.attackBox.height
+            )
+        }
     }
     
     update() {
         this.draw()
+        //actualizacion de posiciones de ataque
+        this.attackBox.posicion.x = this.posicion.x + this.attackBox.offset.x
+        this.attackBox.posicion.y = this.posicion.y
         //this.posicion.y = this.posicion.y + 10 -- lo de abajo es mas simplificado
         this.posicion.x += this.velocidad.x
         this.posicion.y += this.velocidad.y       
@@ -34,12 +59,24 @@ class Sprite {
 
     }
 
+    attack() {
+        this.isAttacking = true
+        setTimeout(() => {
+            this.isAttacking = false
+        }, 100);
+
+    }
+
 }
 
 //jugador
 const jugador = new Sprite ({
     posicion: {x: 0, y: 0},
-    velocidad: {x: 0, y: 0}
+    velocidad: {x: 0, y: 0},
+    color: 'red',
+    offset:
+    {x: 0,
+     y: 0}
 
 })
 
@@ -47,7 +84,11 @@ const jugador = new Sprite ({
 //enemigo
 const oponente = new Sprite ({
     posicion: {x: 500, y: 200},
-    velocidad: {x: 0, y: 0}
+    velocidad: {x: 0, y: 0},
+    color: 'blue',
+    offset:
+    {x: -50,
+     y: 0}
 })
 
 
@@ -78,6 +119,17 @@ const keys = {
 
 }
 
+function detectarColision({rec1, rec2}) {
+    return
+    (
+        rec1.attackBox.posicion.x + rec1.attackBox.width >= rec2.posicion.x && 
+        rec1.attackBox.posicion.x <= rec2.posicion.x + rec2.width &&
+        rec1.attackBox.posicion.y + rec1.attackBox.height >= rec2.posicion.y &&
+        rec1.attackBox.posicion.y <= rec2.posicion.y + rec2.altura
+    )    
+
+
+}
 
 function animate () {
     window.requestAnimationFrame(animate)
@@ -106,6 +158,26 @@ function animate () {
     } else if (keys.ArrowRight.pressed && oponente.lastKey === 'ArrowRight') {
         oponente.velocidad.x = 5
     }
+
+    // detectar colicion pre ataque -- jugador
+
+    if (detectarColision ({ rec1:jugador, rec2: oponente }) &&
+    jugador.isAttacking) 
+       {
+        jugador.isAttacking = false
+        console.log('player attack');
+       }
+    
+
+    // detectar colicion pre ataque -- oponente
+    if (detectarColision ({ rec1:oponente, rec2: jugador }) &&
+        oponente.isAttacking) 
+        {
+            oponente.isAttacking = false
+            console.log('enemy attack');
+        }
+
+
      
 }
 
@@ -129,6 +201,9 @@ window.addEventListener('keydown', (event) => {
         break
         case 'w': jugador.velocidad.y = -20
         break
+        case 'h': jugador.attack()
+        break
+        
 
         //oponente
         case 'ArrowRight': keys.ArrowRight.pressed = true
@@ -138,6 +213,8 @@ window.addEventListener('keydown', (event) => {
         oponente.lastKey = 'ArrowLeft'
         break
         case 'ArrowUp': oponente.velocidad.y = -20
+        break
+        case ' ': oponente.attack()
         break
     }
 
