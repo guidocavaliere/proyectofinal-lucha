@@ -32,11 +32,16 @@
 
 
                 <!-- Timer -->
-                <div style="
+                <div
+                id="timer" 
+                style="
                 background-color: grey; 
                 width: 100px; 
                 height: 100px; 
-                flex-shrink: 0"></div>
+                flex-shrink: 0; 
+                display: flex;
+                align-items: center;
+                justify-content: center">10</div>
 
 
                 <!-- Vida Oponente -->
@@ -46,6 +51,18 @@
                 </div>
 
             </div>
+            <div
+            id="displayText" 
+            style="
+            position: absolute; 
+            color: white; 
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;">Empate</div>
             <canvas>
 
             </canvas>

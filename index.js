@@ -133,7 +133,36 @@ function detectarColision({ rectangle1, rectangle2 }) {
 }
 */
 
+function ganador({jugador, oponente, timerId}) {
+    clearTimeout(timerId)
+    document.querySelector('#displayText').style.display = 'flex'
+    if (jugador.salud === oponente.salud) {
+        document.querySelector('#displayText').innerHTML = 'Empate'
+    } else if (jugador.salud > oponente.salud) {
+        document.querySelector('#displayText').innerHTML = 'Killgore Wins'
+    } else if (jugador.salud < oponente.salud) {
+        document.querySelector('#displayText').innerHTML = 'Rexell Wins'
+    }
+}
 
+let timer = 20
+let timerId
+function decreaseTimer() {
+    
+    if (timer > 0) {
+        timerId = setTimeout (decreaseTimer, 1000)
+        timer--
+        document.querySelector('#timer').innerHTML = timer
+    }
+
+    if (timer === 0) {
+        ganador({jugador, oponente, timerId})
+
+    }
+
+}
+
+decreaseTimer()
 
 function animate () {
     window.requestAnimationFrame(animate)
@@ -195,7 +224,13 @@ function animate () {
             
         }
 
-     
+     //si a uno de los jugadores se le baja la barra de vida se triggerea el game over
+     // codigo debajo basado en la BdV
+
+     if (oponente.salud <= 0 || jugador.salud <= 0) {
+        ganador({jugador, oponente, timerId})
+     }
+
 }
 
 animate()
